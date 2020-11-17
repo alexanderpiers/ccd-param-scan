@@ -3,6 +3,7 @@ import os
 import subprocess
 from config import editConfigFile
 import argparse
+import time
 
 
 def runParameterScan(paramsToScan, paramsScanVal, CCDDroneDir, outputdir, baseconfig, verbose=False):
@@ -16,15 +17,15 @@ def runParameterScan(paramsToScan, paramsScanVal, CCDDroneDir, outputdir, baseco
 			print("Running CCDDExpose on %s config file"%file)
 
 		# Apply new settings
-		loadNewSettingsProcess = subprocess.run([os.path.join(CCDDroneDir, "CCDDApplyNewSettings "), file], stdout=True)
-		
+		loadNewSettingsProcess = subprocess.run([os.path.join(CCDDroneDir, "CCDDApplyNewSettings"), file], stdout=True)
+		time.sleep(2)	
 		# Make the output filename
 		stripConfigFile = os.path.split(file)[0].split(".")[0]
 		outputFilename = "Img_ " + stripConfigFile + ".fits"
-
-		# Expose and readout
-		exposeProcess = subprocess.run([os.path.join(CCDDroneDir, "CCDDExpose"), 2, os.path.join(outputdir, outputFilename)], stdout=True)
 		
+		# Expose and readout
+		exposeProcess = subprocess.run([os.path.join(CCDDroneDir, "CCDDExpose"), str(2), os.path.join(outputdir, outputFilename)], stdout=True)
+		time.sleep(2)
 		if os.path.exists(file):
 			os.remove(file)
 	
