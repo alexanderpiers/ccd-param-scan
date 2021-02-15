@@ -16,14 +16,14 @@ def runParameterScan(paramsToScan, paramsScanVal, CCDDroneDir, outputdir, output
 			print("Running CCDDExpose on %s config file"%file)
 
 		# Apply new settings
-		loadNewSettingsProcess = subprocess.run([os.path.join(CCDDroneDir, "CCDDApplyNewSettings "), file], stdout=True)
+		loadNewSettingsProcess = subprocess.run([os.path.join(CCDDroneDir, "CCDDApplyNewSettings "), file], cwd=CCDDroneDir, stdout=True)
 		
 		# Make the output filename
-		stripConfigFile = os.path.split(file)[0].split(".")[0]
+		stripConfigFile = os.path.split(file)[-1].split(".")[0]
 		outputFilename = outputfile + stripConfigFile + ".fits"
 
 		# Expose and readout
-		exposeProcess = subprocess.run([os.path.join(CCDDroneDir, "CCDDExpose"), 2, os.path.join(outputdir, outputFilename)], stdout=True)
+		exposeProcess = subprocess.run([os.path.join(CCDDroneDir, "CCDDExpose"), 2, os.path.join(outputdir, outputFilename)], cwd=CCDDroneDir, stdout=True)
 		
 		if os.path.exists(file):
 			os.remove(file)
