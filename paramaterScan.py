@@ -5,7 +5,7 @@ from config import editConfigFile
 import argparse
 
 
-def runParameterScan(paramsToScan, paramsScanVal, CCDDroneDir, outputdir, baseconfig, verbose=False):
+def runParameterScan(paramsToScan, paramsScanVal, CCDDroneDir, outputdir, outputfile, baseconfig, verbose=False):
 
 	outputBaseFilename = "Img_"
 
@@ -20,7 +20,7 @@ def runParameterScan(paramsToScan, paramsScanVal, CCDDroneDir, outputdir, baseco
 		
 		# Make the output filename
 		stripConfigFile = os.path.split(file)[0].split(".")[0]
-		outputFilename = "Img_ " + stripConfigFile + ".fits"
+		outputFilename = outputfile + stripConfigFile + ".fits"
 
 		# Expose and readout
 		exposeProcess = subprocess.run([os.path.join(CCDDroneDir, "CCDDExpose"), 2, os.path.join(outputdir, outputFilename)], stdout=True)
@@ -74,7 +74,7 @@ if __name__ == '__main__':
 	parser.add_argument("-c", "--config", default="config/config.ini", help="Base config file to modify")
 	parser.add_argument("-v", "--verbose", action="store_true", help="Verbose Mode")
 	parser.add_argument("-s", "--scan", nargs="*", required=True, help="Parameter scan. Format: name start stop increment. Can scan over multiple parameters")
-	
+	parser.add_argument("-f", "--filename", default="Img_", help="Base of the output filename")
 
 	args = parser.parse_args()
 
@@ -83,6 +83,7 @@ if __name__ == '__main__':
 	config    = args.config
 	verbose   = args.verbose
 	scanvars  = args.scan
+	outfile   = args.filename
 
 	# Parse the scan values into the correct format
 	if len(scanvars) % 4 != 0:
@@ -96,4 +97,4 @@ if __name__ == '__main__':
 
 	# Execute the scan
 	print("Running parameter scan...")
-	runParameterScan(paramsToScan, paramsScanVal, dronedir, outputdir, config, verbose=verbose)
+	runParameterScan(paramsToScan, paramsScanVal, dronedir, outputdir, outfile config, verbose=verbose)
