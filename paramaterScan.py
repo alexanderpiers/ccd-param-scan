@@ -5,7 +5,7 @@ from config import editConfigFile
 import argparse
 
 
-def runParameterScan(paramsToScan, paramsScanVal, CCDDroneDir, outputdir, outputfile, baseconfig, verbose=False):
+def runParameterScan(paramsToScan, paramsScanVal, CCDDroneDir, outputdir, outputfile, baseconfig, number=1, verbose=False):
 
 	outputBaseFilename = "Img_"
 
@@ -20,13 +20,15 @@ def runParameterScan(paramsToScan, paramsScanVal, CCDDroneDir, outputdir, output
 		
 		# Make the output filename
 		stripConfigFile = os.path.split(file)[-1].split(".")[0]
-		outputFilename = outputfile + stripConfigFile + ".fits"
 
-		# Expose and readout
-		exposeProcess = subprocess.run([os.path.join(CCDDroneDir, "CCDDExpose"), 2, os.path.join(outputdir, outputFilename)], cwd=CCDDroneDir, stdout=True)
-		
-		if os.path.exists(file):
-			os.remove(file)
+		for i in range(number):
+			outputFilename = outputfile + stripConfigFile + "_" + str(i) + ".fits"
+
+			# Expose and readout
+			exposeProcess = subprocess.run([os.path.join(CCDDroneDir, "CCDDExpose"), 20, os.path.join(outputdir, outputFilename)], cwd=CCDDroneDir, stdout=True)
+			
+			if os.path.exists(file):
+				os.remove(file)
 	
 
 def generateScanParamConfig(parametersToScan, parametersValue, baseconfig="config/config.ini" ):
@@ -75,6 +77,7 @@ if __name__ == '__main__':
 	parser.add_argument("-v", "--verbose", action="store_true", help="Verbose Mode")
 	parser.add_argument("-s", "--scan", nargs="*", required=True, help="Parameter scan. Format: name start stop increment. Can scan over multiple parameters")
 	parser.add_argument("-f", "--filename", default="Img_", help="Base of the output filename")
+	parser.add_argument("-n", "--number", default=1, type=int, help="Number of images to take per settings")
 
 	args = parser.parse_args()
 
@@ -84,6 +87,9 @@ if __name__ == '__main__':
 	verbose   = args.verbose
 	scanvars  = args.scan
 	outfile   = args.filename
+	numberOfExposures = args.number
+
+	print(args)
 
 	# Parse the scan values into the correct format
 	if len(scanvars) % 4 != 0:
@@ -97,4 +103,4 @@ if __name__ == '__main__':
 
 	# Execute the scan
 	print("Running parameter scan...")
-	runParameterScan(paramsToScan, paramsScanVal, dronedir, outputdir, outfile config, verbose=verbose)
+	runParameterScan(paramsToScan, paramsScanVal, dronedir, outputdir, outfile, config, number=numberOfExposures, verbose=verbose)
