@@ -3,6 +3,7 @@ import os
 import subprocess
 from config import editConfigFile
 import argparse
+import time
 
 
 def runParameterScan(paramsToScan, paramsScanVal, CCDDroneDir, outputdir, outputfile, baseconfig, number=1, verbose=False):
@@ -27,8 +28,9 @@ def runParameterScan(paramsToScan, paramsScanVal, CCDDroneDir, outputdir, output
 			# Expose and readout
 			exposeProcess = subprocess.run([os.path.join(CCDDroneDir, "CCDDExpose"), 20, os.path.join(outputdir, outputFilename)], cwd=CCDDroneDir, stdout=True)
 			
-			if os.path.exists(file):
-				os.remove(file)
+		if os.path.exists(file):
+			os.remove(file)
+
 	
 
 def generateScanParamConfig(parametersToScan, parametersValue, baseconfig="config/config.ini" ):
@@ -104,3 +106,4 @@ if __name__ == '__main__':
 	# Execute the scan
 	print("Running parameter scan...")
 	runParameterScan(paramsToScan, paramsScanVal, dronedir, outputdir, outfile, config, number=numberOfExposures, verbose=verbose)
+
